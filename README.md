@@ -26,7 +26,11 @@
 ## 📂 디렉토리 구조 (Directory Structure)
 ```text
 AIgenda/
-├── frontend/    # UI 컴포넌트 (React), 마인드맵 렌더링, API 요청 등
-├── backend/     # API 서버 (FastAPI), DB 연동 (ChromaDB), Gemini API 호출 등
-├── ai/          # Whisper STT 로직, 프롬프트 테스트 스크립트 등
-└── README.md
+├── frontend/          # React 기반 웹 UI 및 데이터 시각화 작업 공간
+│   └── (node_modules/)# 프론트엔드 패키지 폴더 (Git 업로드 제외)
+├── backend/           # FastAPI 서버 및 API 개발 작업 공간
+│   ├── (venv/)        # 파이썬 가상환경 (Git 업로드 제외)
+│   └── (chroma_data/) # ChromaDB 로컬 데이터 저장소 (Git 업로드 제외)
+├── ai/                # OpenAI Whisper 모델 연동 및 RAG 알고리즘 설계 공간
+├── .gitignore         # 보안 및 불필요한 파일 Git 추적 제외 설정
+└── README.md          # 프로젝트 총괄 설명서
