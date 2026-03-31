@@ -19,8 +19,8 @@
 
 * **인공지능**:  OpenAI Whisper, Google Gemini API 
 * **프론트엔드**:  React, React Flow
-* **백엔드**:  FastAPI
-* **데이터베이스**:  ChromaDB
+* **백엔드**:  FastAPI, SQLAlchemy
+* **데이터베이스**:  PostgreSQL, ChromaDB
 * **협업 도구**:  GitHub, Visual Studio Code 
 
 ---
