@@ -1,9 +1,33 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from fastapi import APIRouter, UploadFile, File
+import os, uuid
+from services.stt_service import transcribe
+from db.database import SessionLocal
+from db.models import Meeting
 
-DATABASE_URL = "postgresql://postgres:1111@localhost:5432/aigenda"
+router = APIRouter()
+UPLOAD_DIR = "uploads"
 
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
+@router.post("/upload")
+async def upload_audio(file: UploadFile = File(...)):
+    # 파일명 UUID로 변경
+    filename = str(uuid.uuid4()) + ".wav"
+    file_path = os.path.join(UPLOAD_DIR, filename)
+
+    # 파일 저장
+    with open(file_path, "wb") as f:
+        f.write(await file.read())
+
+    # STT 실행
+    text = transcribe(file_path)
+
+    # DB 저장
+    db = SessionLocal()
+    meeting = Meeting(
+        title=filename,
+        transcript=text
+    )
+    db.add(meeting)
+    db.commit()
+    db.close()
+
+    return {"text": text, "filename": filename}
