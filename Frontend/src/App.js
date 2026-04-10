@@ -1,144 +1,175 @@
-import React, { useState } from 'react';
-import ReactFlow, { Background, Controls } from 'reactflow';
-import 'reactflow/dist/style.css';
-import './App.css';
+import React, { useState, useEffect, useRef } from 'react';
+import Header from './components/Header';
+import Sidebar from './components/Sidebar';
+import Summary from './components/Summary';
+import MindMap from './components/MindMap';
 
-const initialNodes = [
-  { id: '1', position: { x: 250, y: 5 }, data: { label: '이곳에 주제 입력' } },
-  { id: '2', position: { x: 100, y: 100 }, data: { label: '첫 번째 핵심 키워드' } },
-  { id: '3', position: { x: 400, y: 100 }, data: { label: '두 번째 핵심 키워드' } },
-];
-const initialEdges = [
-  { id: 'e1-2', source: '1', target: '2', animated: true },
-  { id: 'e1-3', source: '1', target: '3' },
-];
+// 임시 데이터
+const initialMeetingData = {
+  "meeting_003": {
+    title: "AIgenda 모바일 앱 V2.0 디자인 시스템 최종 검수",
+    meta: "2026. 4. 8.",
+    summary: "사용자 편의성을 위해 '다크 모드'의 대비감을 조정하고, 마인드맵 시각화 화면에서 핀치 줌 기능을 강화하기로 했습니다. 특히 시각적 요소가 강조된 Mermaid 차트의 가독성을 높이는 것에 집중했습니다.",
+    bullets: [
+      "[디자인] 다크모드 텍스트 컬러를 #FFFFFF로 상향 조정",
+      "[개발] Mermaid.js 렌더링 시 폰트 크기 18px 강제 적용",
+      "[QA] 저사양 단말기에서의 시각화 로딩 속도 최적화"
+    ],
+    mermaidCode: "flowchart TB\n  Root([UX/UI 개편]) --> UI{UI 개선}\n  Root --> Dev{개발 과제}\n  UI --> UI1[다크모드 대비 조정]\n  Dev --> Dev1[줌 기능 강화]\n  Dev --> Dev2[폰트 크기 확대]"
+  },
+  "meeting_002": {
+    title: "2026년 1분기 영업 실적 분석 및 2분기 전망",
+    meta: "2026. 4. 5.",
+    summary: "1분기 매출은 전년 대비 12% 성장했으나, 원자재 가격 상승으로 인해 영업 이익률이 3% 감소했습니다. 이를 보완하기 위해 공급망 다변화와 공정 효율화 작업을 우선순위로 두기로 결정했습니다.",
+    bullets: [
+      "[재무] 영업 이익 방어를 위한 비상 경영 체제 돌입",
+      "[SCM] 베트남 신규 공급처 계약 검토 완료 (4월 말까지)",
+      "[인사] 공정 효율화 전담 TF팀 구성"
+    ],
+    mermaidCode: "flowchart LR\n  Root([1분기 실적]) --> Status{현황}\n  Status --> Revenue[매출 12% 상승]\n  Status --> Profit[이익률 3% 하락]\n  Profit --> Solution[대응책]\n  Solution --> S1[공급망 다변화]\n  Solution --> S2[TF팀 구성]"
+  }
+};
 
 function App() {
+  const [meetings, setMeetings] = useState(initialMeetingData);
+  const [currentId, setCurrentId] = useState(null);
+  const [currentTab, setCurrentTab] = useState('summary'); 
   const [isDark, setIsDark] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [meetings, setMeetings] = useState([]);
-  const [activeMeeting, setActiveMeeting] = useState(null);
-  const [activeTab, setActiveTab] = useState('mindmap');
 
-  const toggleDarkMode = () => {
-    setIsDark(!isDark);
-    document.documentElement.setAttribute('data-theme', !isDark ? 'dark' : 'light');
+  const [editingId, setEditingId] = useState(null);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, targetId: null });
+  const editInputRef = useRef(null);
+
+  useEffect(() => {
+    const sortedKeys = Object.keys(meetings).sort().reverse();
+    if (sortedKeys.length > 0 && !currentId) setCurrentId(sortedKeys[0]);
+  }, [meetings, currentId]);
+
+  useEffect(() => {
+    if (editingId && editInputRef.current) {
+      editInputRef.current.focus();
+    }
+  }, [editingId]);
+
+  const handleToggleTheme = (e) => {
+    const checked = e.target.checked;
+    setIsDark(checked);
+    document.documentElement.setAttribute('data-theme', checked ? 'dark' : 'light');
   };
 
-  // 파일 업로드 처리 (가짜 백엔드 연동)
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    setIsLoading(true);
-
-    // 실제로는 여기서 fetch('/upload') 로 백엔드에 보내야 하지만,
-    // 지금은 백엔드가 없으므로 setTimeout으로 2초 뒤에 가짜 데이터를 생성함.
-    setTimeout(() => {
-      const newMeeting = {
-        id: 'meeting_' + Date.now(),
-        title: file.name.split('.')[0] + ' 회의',
-        date: new Date().toLocaleDateString(),
-        summary: "이곳은 AI가 요약한 텍스트가 들어갈 자리입니다. 프롬프트 엔지니어링 결과물이 이곳에 출력됩니다."
-      };
-
-      setMeetings([newMeeting, ...meetings]);
-      setActiveMeeting(newMeeting);
-      setIsLoading(false);
-      
-      event.target.value = '';
-    }, 2000);
+  const handleFileUpload = (e) => {
+    alert("아직 백엔드 서버가 연결되지 않았습니다!");
+    e.target.value = ''; 
   };
+
+  // 노트 삭제 확정 함수
+  const confirmDelete = () => {
+    const { targetId } = deleteModal;
+    if (!targetId) return;
+
+    const newMeetings = { ...meetings };
+    delete newMeetings[targetId];
+    
+    setMeetings(newMeetings);
+    setDeleteModal({ isOpen: false, targetId: null });
+
+    if (currentId === targetId) {
+      const remainingKeys = Object.keys(newMeetings).sort().reverse();
+      setCurrentId(remainingKeys.length > 0 ? remainingKeys[0] : null);
+    }
+  };
+
+  // 제목 수정 저장 함수
+  const saveTitle = (id, newTitle) => {
+    if (newTitle.trim()) {
+      setMeetings({
+        ...meetings,
+        [id]: { ...meetings[id], title: newTitle }
+      });
+    }
+    setEditingId(null);
+  };
+
+  const activeMeeting = meetings[currentId];
 
   return (
     <>
-      {isLoading && (
-        <div className="loading-overlay" style={{ display: 'flex' }}>
-          <div className="loader-ring"></div>
-          <div className="loading-text">AI가 회의록을 분석하고 있습니다...</div>
-        </div>
-      )}
-
-      <div className="bg-mesh"><div className="blob blob1"></div><div className="blob blob2"></div><div className="blob blob3"></div></div>
-
-      <header className="top-navbar">
-        <div className="logo-wrap"><div className="logo">AIgenda</div></div>
-        <input type="text" className="global-search" placeholder="전체 워크스페이스 검색..." />
-        <div className="top-actions">
-          <button className="btn-icon" onClick={toggleDarkMode} title="다크모드 전환">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-          </button>
-          
-          <input type="file" id="fileInput" accept="audio/*,video/*" style={{ display: 'none' }} onChange={handleFileUpload} />
-          
-          <button className="btn-new" onClick={() => document.getElementById('fileInput').click()}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>새 회의 녹음
-          </button>
-        </div>
-      </header>
-
+      <Header onUpload={handleFileUpload} onToggleTheme={handleToggleTheme} />
+      
       <main className="app-container">
-        <aside className="left-panel">
-          <div className="panel-header">회의 기록 보관함 <span style={{ fontSize: '1rem', color: '#8b5cf6', fontWeight: 800, background: '#f3f0ff', padding: '0.3rem 0.8rem', borderRadius: '20px' }}>{meetings.length}건</span></div>
-          <div className="meeting-list">
-            {meetings.map((meeting) => (
-              <div 
-                key={meeting.id} 
-                className={`meeting-item ${activeMeeting?.id === meeting.id ? 'active' : ''}`}
-                onClick={() => setActiveMeeting(meeting)}
-              >
-                <div className="m-title">{meeting.title}</div>
-                <div className="m-meta">📅 {meeting.date}</div>
-              </div>
-            ))}
-          </div>
-        </aside>
+        <Sidebar meetings={meetings} currentId={currentId} onSelect={setCurrentId} />
 
         <section className="right-panel">
-          {!activeMeeting && (
-            <div className="workspace-content" style={{ justifyContent: 'center', alignItems: 'center' }}>
-              <div style={{ textAlign:'center', color: 'var(--text-muted)', fontSize: '1.3rem' }}>
-                우측 상단의 <b>'+ 새 회의 녹음'</b> 버튼을 눌러 오디오 파일을 업로드해보세요.
-              </div>
-            </div>
-          )}
-
-          {activeMeeting && (
+          {activeMeeting ? (
             <>
               <div className="workspace-header" style={{ display: 'block' }}>
-                <div className="ws-meta">📅 업로드 일자: {activeMeeting.date}</div>
-                <h2 className="ws-title">{activeMeeting.title}</h2>
-                <div className="tabs">
-                  <button className={`tab-btn ${activeTab === 'summary' ? 'active' : ''}`} onClick={() => setActiveTab('summary')}>텍스트 요약</button>
-                  <button className={`tab-btn ${activeTab === 'mindmap' ? 'active' : ''}`} onClick={() => setActiveTab('mindmap')}>마인드맵 시각화</button>
+                <div className="ws-meta">{activeMeeting.meta}</div>
+                
+                {/* 제목 및 수정/삭제 버튼 UI 영역 */}
+                <div className="ws-title-container">
+                  {editingId === currentId ? (
+                    // 수정 모드일 때 보여줄 Input 창
+                    <input 
+                      ref={editInputRef}
+                      type="text" 
+                      style={{ fontSize: 'clamp(1.75rem, 2.5vw, 2.5rem)', fontWeight: 800, width: '100%', border: 'none', outline: 'none', background: 'transparent', color: 'var(--ink)' }}
+                      defaultValue={activeMeeting.title}
+                      onBlur={(e) => saveTitle(currentId, e.target.value)} // 커서가 바깥으로 나가면 저장
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') saveTitle(currentId, e.target.value); // 엔터 치면 저장
+                        if (e.key === 'Escape') setEditingId(null); // ESC 누르면 취소
+                      }}
+                    />
+                  ) : (
+                    // 일반 모드일 때 보여줄 텍스트와 아이콘 버튼들
+                    <>
+                      <h2 className="ws-title">{activeMeeting.title}</h2>
+                      <button className="header-edit-btn" onClick={() => setEditingId(currentId)} title="제목 수정">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                      </button>
+                      <button className="header-delete-btn" onClick={() => setDeleteModal({ isOpen: true, targetId: currentId })} title="노트 삭제">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
               
-              <div className="workspace-content" style={{ padding: activeTab === 'mindmap' ? 0 : '3rem' }}> 
-                {/* 탭이 'mindmap'일 때 */}
-                {activeTab === 'mindmap' && (
-                  <div style={{ width: '100%', height: '100%', flex: 1, minHeight: '600px' }}>
-                    <ReactFlow nodes={initialNodes} edges={initialEdges} fitView>
-                      <Background />
-                      <Controls />
-                    </ReactFlow>
-                  </div>
-                )}
-
-                {/* 탭이 'summary'일 때 */}
-                {activeTab === 'summary' && (
-                  <div className="summary-section">
-                    <h3><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg> 회의 핵심 요약</h3>
-                    <div className="summary-card">
-                      <p>{activeMeeting.summary}</p>
-                    </div>
-                  </div>
-                )}
+              <div className="tabs-container">
+                <button className={`tab-btn ${currentTab === 'summary' ? 'active' : ''}`} onClick={() => setCurrentTab('summary')}>요약</button>
+                <button className={`tab-btn ${currentTab === 'visualization' ? 'active' : ''}`} onClick={() => setCurrentTab('visualization')}>시각화</button>
+              </div>
+              
+              <div className="workspace-content">
+                {currentTab === 'summary' && <Summary meeting={activeMeeting} />}
+                {currentTab === 'visualization' && <MindMap meetingId={currentId} mermaidCode={activeMeeting.mermaidCode} isDark={isDark} />}
               </div>
             </>
+          ) : (
+            // 모든 노트가 지워졌을 때 보여줄 빈 화면
+            <div className="workspace-content" style={{ justifyContent: 'center', alignItems: 'center' }}>
+              <div className="empty-state">
+                <button className="btn-new" style={{ marginBottom: '1.2rem', boxShadow: 'var(--sh-sm)' }} onClick={() => document.getElementById('fileInput').click()}>
+                  <span className="btn-plus">+</span> 새로운 노트
+                </button>
+                <p className="empty-label">우측 상단이나 중앙의 버튼을 눌러<br/>새로운 회의 음성을 업로드해보세요.</p>
+              </div>
+            </div>
           )}
         </section>
       </main>
+
+      {/* 휴지통 버튼을 눌렀을 때 뜨는 삭제 확인 모달창 */}
+      <div className={`modal-overlay ${deleteModal.isOpen ? 'show' : ''}`}>
+        <div className="modal-content">
+          <div className="modal-title">노트 삭제</div>
+          <div className="modal-desc">이 노트를 정말 삭제하시겠습니까?<br/>삭제된 데이터는 복구할 수 없습니다.</div>
+          <div className="modal-actions">
+            <button className="btn-modal-cancel" onClick={() => setDeleteModal({ isOpen: false, targetId: null })}>취소</button>
+            <button className="btn-modal-danger" onClick={confirmDelete}>삭제</button>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
