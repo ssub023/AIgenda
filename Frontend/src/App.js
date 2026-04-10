@@ -33,7 +33,7 @@ const initialMeetingData = {
 function App() {
   const [meetings, setMeetings] = useState(initialMeetingData);
   const [currentId, setCurrentId] = useState(null);
-  const [currentTab, setCurrentTab] = useState('summary'); 
+  const [currentTab, setCurrentTab] = useState('summary');
   const [isDark, setIsDark] = useState(false);
 
   const [editingId, setEditingId] = useState(null);
@@ -59,7 +59,7 @@ function App() {
 
   const handleFileUpload = (e) => {
     alert("아직 백엔드 서버가 연결되지 않았습니다!");
-    e.target.value = ''; 
+    e.target.value = '';
   };
 
   // 노트 삭제 확정 함수
@@ -69,7 +69,7 @@ function App() {
 
     const newMeetings = { ...meetings };
     delete newMeetings[targetId];
-    
+
     setMeetings(newMeetings);
     setDeleteModal({ isOpen: false, targetId: null });
 
@@ -95,51 +95,34 @@ function App() {
   return (
     <>
       <Header onUpload={handleFileUpload} onToggleTheme={handleToggleTheme} />
-      
+
       <main className="app-container">
-        <Sidebar meetings={meetings} currentId={currentId} onSelect={setCurrentId} />
+        <Sidebar
+          meetings={meetings}
+          currentId={currentId}
+          onSelect={setCurrentId}
+          editingId={editingId}
+          setEditingId={setEditingId}
+          saveTitle={saveTitle}
+          onDeleteClick={(id) => setDeleteModal({ isOpen: true, targetId: id })}
+        />
 
         <section className="right-panel">
           {activeMeeting ? (
             <>
               <div className="workspace-header" style={{ display: 'block' }}>
                 <div className="ws-meta">{activeMeeting.meta}</div>
-                
-                {/* 제목 및 수정/삭제 버튼 UI 영역 */}
+
                 <div className="ws-title-container">
-                  {editingId === currentId ? (
-                    // 수정 모드일 때 보여줄 Input 창
-                    <input 
-                      ref={editInputRef}
-                      type="text" 
-                      style={{ fontSize: 'clamp(1.75rem, 2.5vw, 2.5rem)', fontWeight: 800, width: '100%', border: 'none', outline: 'none', background: 'transparent', color: 'var(--ink)' }}
-                      defaultValue={activeMeeting.title}
-                      onBlur={(e) => saveTitle(currentId, e.target.value)} // 커서가 바깥으로 나가면 저장
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') saveTitle(currentId, e.target.value); // 엔터 치면 저장
-                        if (e.key === 'Escape') setEditingId(null); // ESC 누르면 취소
-                      }}
-                    />
-                  ) : (
-                    // 일반 모드일 때 보여줄 텍스트와 아이콘 버튼들
-                    <>
-                      <h2 className="ws-title">{activeMeeting.title}</h2>
-                      <button className="header-edit-btn" onClick={() => setEditingId(currentId)} title="제목 수정">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                      </button>
-                      <button className="header-delete-btn" onClick={() => setDeleteModal({ isOpen: true, targetId: currentId })} title="노트 삭제">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                      </button>
-                    </>
-                  )}
+                  <h2 className="ws-title">{activeMeeting.title}</h2>
                 </div>
               </div>
-              
+
               <div className="tabs-container">
                 <button className={`tab-btn ${currentTab === 'summary' ? 'active' : ''}`} onClick={() => setCurrentTab('summary')}>요약</button>
                 <button className={`tab-btn ${currentTab === 'visualization' ? 'active' : ''}`} onClick={() => setCurrentTab('visualization')}>시각화</button>
               </div>
-              
+
               <div className="workspace-content">
                 {currentTab === 'summary' && <Summary meeting={activeMeeting} />}
                 {currentTab === 'visualization' && <MindMap meetingId={currentId} mermaidCode={activeMeeting.mermaidCode} isDark={isDark} />}
@@ -152,7 +135,7 @@ function App() {
                 <button className="btn-new" style={{ marginBottom: '1.2rem', boxShadow: 'var(--sh-sm)' }} onClick={() => document.getElementById('fileInput').click()}>
                   <span className="btn-plus">+</span> 새로운 노트
                 </button>
-                <p className="empty-label">우측 상단이나 중앙의 버튼을 눌러<br/>새로운 회의 음성을 업로드해보세요.</p>
+                <p className="empty-label">우측 상단이나 중앙의 버튼을 눌러<br />새로운 회의 음성을 업로드해보세요.</p>
               </div>
             </div>
           )}
@@ -163,7 +146,7 @@ function App() {
       <div className={`modal-overlay ${deleteModal.isOpen ? 'show' : ''}`}>
         <div className="modal-content">
           <div className="modal-title">노트 삭제</div>
-          <div className="modal-desc">이 노트를 정말 삭제하시겠습니까?<br/>삭제된 데이터는 복구할 수 없습니다.</div>
+          <div className="modal-desc">이 노트를 정말 삭제하시겠습니까?<br />삭제된 데이터는 복구할 수 없습니다.</div>
           <div className="modal-actions">
             <button className="btn-modal-cancel" onClick={() => setDeleteModal({ isOpen: false, targetId: null })}>취소</button>
             <button className="btn-modal-danger" onClick={confirmDelete}>삭제</button>
