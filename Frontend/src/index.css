@@ -1163,6 +1163,9 @@ body {
     color: var(--ink-sub);
     cursor: pointer;
     transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .dropdown-item:hover {
@@ -1180,21 +1183,21 @@ body {
 
 /* ── 사이드바 내에서 바로 수정하는 인풋창 ── */
 .sidebar-edit-input {
-  width: 100%;
-  border: 1.5px solid var(--green) !important;
-  background: var(--bg);
-  color: var(--ink);
-  border-radius: 6px;
-  padding: 4px 8px;
-  
-  font-family: 'SUIT', 'DM Sans', sans-serif !important; 
-  font-size: 1rem !important; 
-  font-weight: 600 !important; 
-  
-  outline: none;
-  margin-bottom: 0.3rem;
-  box-sizing: border-box;
-  
-  box-shadow: 0 0 0 3px var(--green-dim);
-  transition: all 0.2s ease;
+    width: 100%;
+    border: 1.5px solid var(--green) !important;
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 6px;
+    padding: 4px 8px;
+
+    font-family: 'SUIT', 'DM Sans', sans-serif !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+
+    outline: none;
+    margin-bottom: 0.3rem;
+    box-sizing: border-box;
+
+    box-shadow: 0 0 0 3px var(--green-dim);
+    transition: all 0.2s ease;
 }
