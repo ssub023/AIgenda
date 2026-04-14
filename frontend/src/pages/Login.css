@@ -1,0 +1,123 @@
+.login-page {
+    background-color: #EDEAE3;
+    color: #1A1714;
+    overflow-x: hidden;
+    height: auto; 
+    min-height: 100vh;
+}
+
+.login-page section {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.login-page .section-surface {
+    background-color: #FAF8F4;
+}
+
+.login-page .container {
+    max-width: 1100px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 50px;
+}
+
+.login-page .text-area { flex: 1; }
+
+.login-page .badge {
+    display: inline-block;
+    padding: 6px 14px;
+    background: rgba(44, 95, 63, 0.1);
+    color: #2C5F3F;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.login-page h2 { font-size: 3rem; line-height: 1.2; margin-bottom: 20px; color: #2C5F3F; }
+.login-page p { font-size: 1.15rem; color: #555; line-height: 1.7; }
+
+.login-page .image-area {
+    flex: 1.2;
+    height: 450px;
+    background: white;
+    border-radius: 24px;
+    border: 1px solid #DDD9D1;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #ccc;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-page .content-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.login-page .hero { 
+    text-align: center; 
+    flex-direction: column; 
+    background-color: #EDEAE3; 
+    position: relative;
+    background-image: linear-gradient(#DDD9D1 1px, transparent 1px);
+    background-size: 100% 45px;
+}
+
+.login-page .hero::before {
+    content: '';
+    position: absolute;
+    left: 30px; top: 0; bottom: 0;
+    width: 30px;
+    background-image: radial-gradient(circle, #DDD9D1 5px, transparent 5px);
+    background-size: 30px 45px;
+    opacity: 0.6;
+}
+
+.login-page .hero h1 { font-size: 5.5rem; color: #2C5F3F; margin-bottom: 15px; letter-spacing: -0.05em; font-weight: 800; }
+.login-page .hero p { margin-bottom: 40px; z-index: 1; }
+
+.login-page .btn-google {
+    padding: 16px 32px;
+    background: white;
+    border-radius: 50px;
+    text-decoration: none;
+    color: #1A1714;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: 0.3s;
+    z-index: 1;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+}
+
+.login-page .btn-google:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+
+.login-page footer {
+    padding: 60px 20px;
+    background: #EDEAE3;
+    border-top: 1px solid #DDD9D1;
+    text-align: center;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+    .login-page .container { flex-direction: column; text-align: center; }
+    .login-page h2 { font-size: 2.2rem; }
+    .login-page .hero h1 { font-size: 3.5rem; }
+    .login-page .hero::before { left: 10px; width: 20px; background-size: 20px 45px; }
+    .login-page .image-area { height: 300px; width: 100%; }
+}
