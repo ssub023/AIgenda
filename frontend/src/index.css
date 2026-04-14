@@ -1094,6 +1094,46 @@ body {
     gap: clamp(10px, 0.9vw, 18px);
 }
 
+/* ── 회의록(Transcript) 탭 스타일 ── */
+.transcript-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.transcript-line {
+  padding: 1.2rem 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem;
+  border-bottom: 1px solid var(--border-soft);
+  animation: fadeUp 0.3s var(--ease) both;
+}
+
+.transcript-line:last-child {
+  border-bottom: none;
+}
+
+.ts-time-badge {
+  background: var(--surface-alt);
+  color: var(--ink-muted);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  margin-top: 2px;
+  border: 1px solid var(--border-soft);
+}
+
+.ts-text {
+  font-size: 1.05rem;
+  color: var(--ink-sub);
+  line-height: 1.7;
+  word-break: keep-all;
+}
+
 /* 1. 더보기(...) 버튼: 아이템에 호버할 때만 보임 */
 .btn-more {
     background: transparent;

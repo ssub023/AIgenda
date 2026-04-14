@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Summary from '../components/Summary';
 import MindMap from '../components/MindMap';
+import Transcript from '../components/Transcript';
 
 // 임시 데이터
 const initialMeetingData = {
@@ -15,6 +16,13 @@ const initialMeetingData = {
       "[개발] Mermaid.js 렌더링 시 폰트 크기 18px 강제 적용",
       "[QA] 저사양 단말기에서의 시각화 로딩 속도 최적화"
     ],
+    transcript: [
+      { time: "00:00", text: "본격적으로 회의 시작하도록 하겠습니다. 오늘 안건은 AIgenda 모바일 앱 V2.0 디자인 시스템 최종 검수입니다." },
+      { time: "12:05", text: "마인드맵이 모바일에서 너무 작게 보인다는 사용자 피드백이 지속적으로 들어오고 있습니다." },
+      { time: "14:30", text: "네, 그래서 차트 렌더링 옵션에서 useMaxWidth를 끄고 핀치 줌을 활성화하는 방향으로 수정하겠습니다." },
+      { time: "18:45", text: "다크모드일 때 글씨가 잘 안 보인다는 의견도 있었으니, 텍스트 컬러를 #FFFFFF로 상향 조정해 주세요." },
+      { time: "22:10", text: "알겠습니다. 해당 사항들 반영해서 다음 주 수요일까지 QA 넘기도록 하겠습니다." }
+    ],
     mermaidCode: "flowchart TB\n  Root([UX/UI 개편]) --> UI{UI 개선}\n  Root --> Dev{개발 과제}\n  UI --> UI1[다크모드 대비 조정]\n  Dev --> Dev1[줌 기능 강화]\n  Dev --> Dev2[폰트 크기 확대]"
   },
   "meeting_002": {
@@ -26,11 +34,17 @@ const initialMeetingData = {
       "[SCM] 베트남 신규 공급처 계약 검토 완료 (4월 말까지)",
       "[인사] 공정 효율화 전담 TF팀 구성"
     ],
+    transcript: [
+      { time: "01:10", text: "1분기 실적 보고서 다들 확인하셨죠? 매출은 올랐는데 이익률이 떨어졌습니다." },
+      { time: "05:20", text: "원가 비중이 너무 높습니다. 다른 공급처 확보가 시급해요." },
+      { time: "08:10", text: "다음 주까지 베트남 쪽 파트너사 리스트업해서 보고하겠습니다." },
+      { time: "15:00", text: "내부 공정 효율화도 필요하니, 인사팀에서는 다음 달 초까지 전담 TF팀을 구성해 주세요." }
+    ],
     mermaidCode: "flowchart LR\n  Root([1분기 실적]) --> Status{현황}\n  Status --> Revenue[매출 12% 상승]\n  Status --> Profit[이익률 3% 하락]\n  Profit --> Solution[대응책]\n  Solution --> S1[공급망 다변화]\n  Solution --> S2[TF팀 구성]"
   }
 };
 
-function App() {
+function Workspace() {
   const [meetings, setMeetings] = useState(initialMeetingData);
   const [currentId, setCurrentId] = useState(null);
   const [currentTab, setCurrentTab] = useState('summary');
@@ -112,7 +126,6 @@ function App() {
             <>
               <div className="workspace-header" style={{ display: 'block' }}>
                 <div className="ws-meta">{activeMeeting.meta}</div>
-
                 <div className="ws-title-container">
                   <h2 className="ws-title">{activeMeeting.title}</h2>
                 </div>
@@ -121,11 +134,13 @@ function App() {
               <div className="tabs-container">
                 <button className={`tab-btn ${currentTab === 'summary' ? 'active' : ''}`} onClick={() => setCurrentTab('summary')}>요약</button>
                 <button className={`tab-btn ${currentTab === 'visualization' ? 'active' : ''}`} onClick={() => setCurrentTab('visualization')}>시각화</button>
+                <button className={`tab-btn ${currentTab === 'transcript' ? 'active' : ''}`} onClick={() => setCurrentTab('transcript')}>회의록</button>
               </div>
 
               <div className="workspace-content">
                 {currentTab === 'summary' && <Summary meeting={activeMeeting} />}
                 {currentTab === 'visualization' && <MindMap meetingId={currentId} mermaidCode={activeMeeting.mermaidCode} isDark={isDark} />}
+                {currentTab === 'transcript' && <Transcript meeting={activeMeeting} />}
               </div>
             </>
           ) : (
@@ -157,4 +172,4 @@ function App() {
   );
 }
 
-export default App;
+export default Workspace;
