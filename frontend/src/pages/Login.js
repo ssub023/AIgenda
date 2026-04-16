@@ -10,18 +10,18 @@ function Login({ onLogin }) {
 
     useEffect(() => {
         document.body.style.overflow = 'auto';
-        
+
         const rootElement = document.getElementById('root');
         if (rootElement) {
             rootElement.style.height = 'auto';
             rootElement.style.padding = '0';
         }
 
-        AOS.init({ 
-            duration: 1000, 
-            once: false 
+        AOS.init({
+            duration: 1000,
+            once: false
         });
-        
+
         setTimeout(() => AOS.refresh(), 100);
 
         return () => {
@@ -36,7 +36,7 @@ function Login({ onLogin }) {
     const handleGoogleLogin = () => {
         // 실제 구글 로그인 API가 연동되기 전까지는 
         // 클릭 시 바로 로그인이 완료된 것으로 처리
-        onLogin(); 
+        onLogin();
         navigate('/'); // 로그인 후 메인 화면으로 이동
     };
 
@@ -45,7 +45,7 @@ function Login({ onLogin }) {
             <section className="hero">
                 <div data-aos="fade-down" data-aos-duration="1000">
                     <h1>AIgenda</h1>
-                    <p>녹음된 일상이 지식이 되는 순간,<br />파일 업로드 한 번으로 완성되는 스마트 회의 리포트</p>
+                    <p>녹음된 대화가 지식이 되는 순간,<br />파일 업로드 한 번으로 완성되는 스마트 회의 리포트</p>
                     {/* 클릭 이벤트 연결 */}
                     <button className="btn-google" onClick={handleGoogleLogin}>
                         <img src={googleIcon} alt="Google" style={{ width: '20px', marginRight: '12px' }} />
@@ -89,6 +89,19 @@ function Login({ onLogin }) {
                     </div>
                     <div className="image-area" data-aos="zoom-in">
                         [지능형 마인드맵 시각화 화면 이미지]
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div className="container" style={{ flexDirection: 'row-reverse' }}>
+                    <div className="text-area" data-aos="fade-left">
+                        <span className="badge">AI Assistant</span>
+                        <h2>회의록과 대화하는<br />가장 똑똑한 방법</h2>
+                        <p>작성된 회의록을 기반으로 궁금한 내용을 질문하세요. <br />AI가 맥락을 파악하여 회의 내용에 대한 즉각적인 답변을 드립니다.</p>
+                    </div>
+                    <div className="image-area" data-aos="fade-right">
+                        [챗봇 대화 화면 이미지]
                     </div>
                 </div>
             </section>
