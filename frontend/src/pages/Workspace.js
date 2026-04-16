@@ -49,8 +49,8 @@ function Workspace() {
   const [currentId, setCurrentId] = useState(null);
   const [currentTab, setCurrentTab] = useState('summary');
   const [isDark, setIsDark] = useState(false);
-
   const [editingId, setEditingId] = useState(null);
+  const [isEditingHeader, setIsEditingHeader] = useState(false);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, targetId: null });
   const editInputRef = useRef(null);
 
@@ -93,7 +93,7 @@ function Workspace() {
     }
   };
 
-  // 제목 수정 저장 함수
+  // 사이드바에서 제목을 저장할 때 호출되는 함수
   const saveTitle = (id, newTitle) => {
     if (newTitle.trim()) {
       setMeetings({
@@ -102,6 +102,14 @@ function Workspace() {
       });
     }
     setEditingId(null);
+  };
+
+  // 우측 메인 화면에서 제목을 저장할 때 호출되는 함수
+  const saveHeaderTitle = (newTitle) => {
+    if (newTitle.trim()) {
+      setMeetings({ ...meetings, [currentId]: { ...meetings[currentId], title: newTitle } });
+    }
+    setIsEditingHeader(false);
   };
 
   const activeMeeting = meetings[currentId];
@@ -127,7 +135,37 @@ function Workspace() {
               <div className="workspace-header" style={{ display: 'block' }}>
                 <div className="ws-meta">{activeMeeting.meta}</div>
                 <div className="ws-title-container">
-                  <h2 className="ws-title">{activeMeeting.title}</h2>
+                  {/* 분리된 상태(isEditingHeader)와 함수(saveHeaderTitle)를 사용 */}
+                  {isEditingHeader ? (
+                    <input
+                      style={{ 
+                        fontSize: 'clamp(1.75rem, 2.5vw, 2.5rem)', 
+                        fontWeight: 800, 
+                        width: '100%', 
+                        border: 'none', 
+                        outline: 'none', 
+                        background: 'transparent', 
+                        color: 'var(--ink)' 
+                      }}
+                      defaultValue={activeMeeting.title}
+                      autoFocus
+                      onBlur={(e) => saveHeaderTitle(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') saveHeaderTitle(e.target.value);
+                        if (e.key === 'Escape') setIsEditingHeader(false);
+                      }}
+                    />
+                  ) : (
+                    <>
+                      <h2 className="ws-title">{activeMeeting.title}</h2>
+                      <button className="header-edit-btn" onClick={() => setIsEditingHeader(true)} title="수정">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                      </button>
+                      <button className="header-delete-btn" onClick={() => setDeleteModal({ isOpen: true, targetId: currentId })} title="삭제">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 

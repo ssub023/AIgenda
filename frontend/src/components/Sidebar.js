@@ -53,11 +53,16 @@ function Sidebar({ meetings, currentId, onSelect, editingId, setEditingId, saveT
             <div 
               key={id} 
               className={`meeting-item ${id === currentId ? 'active' : ''}`}
-              style={{ position: 'relative' }} // 🌟 드롭다운의 기준점이 됨
+              style={{ 
+                position: 'relative',
+                /* 메뉴가 열린 아이템을 맨 위로 끄집어냄 (active는 2, 평소는 1) */
+                zIndex: menuOpenId === id ? 10 : (id === currentId ? 2 : 1)
+              }}
               onClick={() => {
+                // 수정 중이 아닐 때만 아이템 클릭 시 화면이 넘어가게 함
                 if (editingId !== id) {
                   onSelect(id);
-                  setMenuOpenId(null);
+                  setMenuOpenId(null); 
                 }
               }}
             >
